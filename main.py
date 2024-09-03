@@ -58,8 +58,8 @@ async def create_music(input:Request):
     
     return {
             "emotion": predictedEmotion,
-            "music_url": audio_url,
-            "music_title": file_name
+            "url": audio_url,
+            "title": file_name
             }
 
 def tensor_to_audio(tensor: torch.Tensor, sample_rate: int = 22050) -> np.ndarray:
