@@ -5,3 +5,9 @@ venv
 __pycache__
 
 tmp
+
+stopwords.txt
+
+emotion_analysis_model.h5
+
+main_vocab.pkl
