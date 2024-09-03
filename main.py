@@ -75,6 +75,10 @@ def saveMusicAtS3(generated_music: torch.Tensor, file_name: str, userId: str) ->
     try:
         waveform, sample_rate = tensor_to_audio(generated_music)
 
+        tmp_dir = "./tmp"
+        if not os.path.exists(tmp_dir):
+            os.makedirs(tmp_dir)
+            
         file_path = f"./tmp/{file_name}"
         write(file_path, sample_rate, waveform)
 
