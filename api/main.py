@@ -1,13 +1,12 @@
 import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 import requests
 from fastapi.middleware.cors import CORSMiddleware
-from ai import summary, emotion
 from uuid import uuid4
-import dotenv
 import boto3
-import translate
+import dotenv
 from io import BytesIO
+import jwt
 
 dotenv.load_dotenv()
 
@@ -33,13 +32,11 @@ s3_client = boto3.client(
 @app.post("/create/music")
 async def create_music(input:Request):
     input = await input.json()
-    blogContent = input['content']
-    userId = input['userId']
+    userId = input['user_id']
+    htmlURL = input['html_url']
+    token = input['token']
     
-    summaryContent = summary.summary_text(blogContent)
-    predictedEmotion = emotion.emotion_predict(blogContent)
-    prompt = predictedEmotion + "의 감정이 나타나고 '" + summaryContent + "' 이 문장의 분위기를 잘 나타내는 음악. 장르는 상관 없다."
-    translated_prompt = translate._translate(prompt)
+    verifyToken(token)
     
     #노래 생성 로직 추가 예정
     
@@ -47,11 +44,10 @@ async def create_music(input:Request):
     audio_url = saveMusicAtS3(file_name, userId)
     
     return {
-            "emotion": predictedEmotion,
+            "emotion": "테스트용emotion",
             "url": audio_url,
             "title": file_name
             }
-    
     
 def saveMusicAtS3(file_name: str, userId: str) -> str:
     BUCKET_NAME = os.getenv("S3_BUCKET")
@@ -63,7 +59,7 @@ def saveMusicAtS3(file_name: str, userId: str) -> str:
         audio_file = BytesIO(response.content)
 
         
-        s3_key = f"{userId}/music/{file_name}"
+        s3_key = f"music/{userId}/{file_name}"
         s3_client.upload_fileobj(
             audio_file, 
             BUCKET_NAME, 
@@ -84,3 +80,18 @@ def saveMusicAtS3(file_name: str, userId: str) -> str:
         raise e
     
     
+def verifyToken(token: str):
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+    JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Token has expired"
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token"
+        )
