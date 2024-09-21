@@ -41,8 +41,19 @@ async def create_music(input:Request):
     #토큰 검증
     verifyToken(token)
     
-    #
-    #노래 생성 로직 추가 예정
+    #url로부터 html 코드 가져오기
+    html = getHtml(postURL)
+    
+    #html 코드에서 텍스트 값만 가져오기
+    blogContent = bs.parsePost(html)
+    
+    summaryContent = summary.summary_text(blogContent)
+    emotions = emotion.emotion_predict(blogContent)
+    top1Emotion, top2Emotion = emotions["emotions"]
+    prompt = top1Emotion + ", " + top2Emotion + "의 감정이 나타나고 '" + summaryContent + "' 이 문장의 분위기를 잘 나타내는 음악. 장르는 상관 없다."
+    translated_prompt = bs._translate(prompt)
+    
+    #뮤직젠 코드 추가
     
     file_name = f"{uuid4()}.mp3"
     audio_url = saveMusicAtS3(file_name, userId)
