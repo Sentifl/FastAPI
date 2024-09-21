@@ -52,4 +52,7 @@ def google_translate(
     return translated_text
 
 def parsePost(post: str) -> str:
-    pass
+    soup = BeautifulSoup(post, 'html.parser')
+    text = soup.get_text(separator=' ', strip=True)
+    
+    return text
