@@ -7,7 +7,7 @@ from uuid import uuid4
 import boto3
 import dotenv
 from io import BytesIO
-import translate
+import bs
 import jwt
 
 dotenv.load_dotenv()
@@ -38,8 +38,10 @@ async def create_music(input:Request):
     postURL = input['post_url']
     token = input['token']
     
+    #토큰 검증
     verifyToken(token)
     
+    #
     #노래 생성 로직 추가 예정
     
     file_name = f"{uuid4()}.mp3"
@@ -97,3 +99,17 @@ def verifyToken(token: str):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token"
         )
+        
+def getHtml(postUrl: str) -> str:
+    try:
+        response = requests.get(postUrl)
+        response.raise_for_status() 
+
+        data = response.json()
+
+        html_content = data.get("content", "")
+        
+        return html_content
+    
+    except Exception as e:
+        return str(e)

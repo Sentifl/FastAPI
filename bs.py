@@ -50,3 +50,6 @@ def google_translate(
     translated_text = soup.select_one(".result-container").text.strip()
 
     return translated_text
+
+def parsePost(post: str) -> str:
+    pass
