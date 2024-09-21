@@ -2,10 +2,12 @@ import os
 from fastapi import FastAPI, Request, Depends, HTTPException, status
 import requests
 from fastapi.middleware.cors import CORSMiddleware
+from ai import summary, emotion
 from uuid import uuid4
 import boto3
 import dotenv
 from io import BytesIO
+import translate
 import jwt
 
 dotenv.load_dotenv()
@@ -33,7 +35,7 @@ s3_client = boto3.client(
 async def create_music(input:Request):
     input = await input.json()
     userId = input['user_id']
-    htmlURL = input['html_url']
+    postURL = input['post_url']
     token = input['token']
     
     verifyToken(token)
