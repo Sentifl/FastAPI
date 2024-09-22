@@ -11,7 +11,6 @@ RUN pip install "poetry==1.6.1"
 COPY pyproject.toml* poetry.lock* ./
 COPY api api
 COPY translate.py ./
-COPY .env ./
 
 #poetry로 라이브러리 설치(pyproject.toml이 이미 존재하는 경우)
 RUN poetry config installer.parallel false
