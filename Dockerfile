@@ -1,3 +1,4 @@
+# NVIDIA CUDA와 Python 3.11 이미지 사용
 FROM python:3.11-buster
 
 ENV PYTHONUNBUFFERED=1
@@ -5,13 +6,14 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /src
 
 #pip로 poetry 설치
+RUN apt-get update && apt-get install -y default-jdk
 RUN pip install "poetry==1.6.1"
 
 #poetry의 정의 파일 복사(존재하는 경우)
 COPY pyproject.toml* poetry.lock* ./
 COPY api api
-COPY translate.py ./
-COPY .env ./
+COPY ai ai
+COPY bs.py ./
 
 #poetry로 라이브러리 설치(pyproject.toml이 이미 존재하는 경우)
 RUN poetry config installer.parallel false
