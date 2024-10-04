@@ -15,3 +15,5 @@ main_vocab.pkl
 docker-compose.yaml
 
 Dockerfile.local
+
+.dockerignore

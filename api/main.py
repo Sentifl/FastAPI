@@ -39,8 +39,6 @@ async def create_music(input:Request):
     #html 코드에서 텍스트 값만 가져오기
     blogContent = bs.parsePost(html)
     
-    print("blogContent: "+blogContent)
-    
     #요약, 감정분석, 노래 생성
     summaryContent = summary.summary_text(blogContent)
     print("summaryContent: "+summaryContent)

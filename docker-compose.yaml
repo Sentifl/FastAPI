@@ -1,8 +1,0 @@
-version: '3'
-services:
-  sentifl-demo-app:
-    build: .
-    volumes:
-      - .:/src
-    ports:
-      - "8000:8000"
